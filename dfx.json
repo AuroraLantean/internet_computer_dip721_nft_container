@@ -1,0 +1,29 @@
+{
+  "canisters": {
+    "hello_backend": {
+      "candid": "src/hello_backend/dip721-nft-container.did",
+      "package": "hello_backend",
+      "type": "rust"
+    },
+    "hello_frontend": {
+      "dependencies": [
+        "hello_backend"
+      ],
+      "frontend": {
+        "entrypoint": "src/hello_frontend/src/index.html"
+      },
+      "source": [
+        "src/hello_frontend/assets",
+        "dist/hello_frontend/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "version": 1
+}
