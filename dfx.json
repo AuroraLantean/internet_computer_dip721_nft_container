@@ -1,13 +1,13 @@
 {
   "canisters": {
-    "hello_backend": {
-      "candid": "src/hello_backend/dip721-nft-container.did",
-      "package": "hello_backend",
+    "dip721_nft_container": {
+      "candid": "src/dip721_nft_container/dip721-nft-container.did",
+      "package": "dip721_nft_container",
       "type": "rust"
     },
     "hello_frontend": {
       "dependencies": [
-        "hello_backend"
+        "dip721_nft_container"
       ],
       "frontend": {
         "entrypoint": "src/hello_frontend/src/index.html"

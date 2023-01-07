@@ -178,8 +178,8 @@ struct LogoResult {
 fn logo() /* -> &'static LogoResult */
 {
     ic_cdk::setup();
-    STATE.with(|state| call::reply((state.borrow().logo.as_ref().unwrap(),)))
-} //.unwrap_or(&DEFAULT_LOGO)
+    STATE.with(|state| call::reply((state.borrow().logo.as_ref().unwrap_or(&DEFAULT_LOGO),)))
+}
 
 #[query(name = "nameDip721")]
 fn name() -> String {
@@ -190,10 +190,10 @@ fn name() -> String {
 fn symbol() -> String {
     STATE.with(|state| state.borrow().symbol.clone())
 }
-/*const DEFAULT_LOGO: LogoResult = LogoResult {
+const DEFAULT_LOGO: LogoResult = LogoResult {
     data: Cow::Borrowed(include_base64!("logo.png")),
     logo_type: Cow::Borrowed("image/png"),
-};*/
+};
 
 #[query(name = "totalSupplyDip721")]
 fn total_supply() -> u64 {
