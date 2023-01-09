@@ -1,0 +1,11 @@
+[
+  {
+    "asset": "nft_0.png",
+    "metadata": [
+      {
+        "collection": "collectionName",
+        "sampleKey": "sampleKeyValue"
+      }
+    ]
+  }
+]

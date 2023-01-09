@@ -32,7 +32,7 @@ struct HttpResponse<'a> {
 
 // This could reply with a lot of data. To return this data from the function would require it to be cloned,
 // because the thread_local! closure prevents us from returning data borrowed from inside it.
-// Luckily, it doesn't actually get returned from the exported WASM function, that's just an abstraction. 
+// Luckily, it doesn't actually get returned from the exported WASM function, that's just an abstraction.
 // What happens is it gets fed to call::reply, and we can do that explicitly to save the cost of cloning the data.
 // #[query] calls call::reply unconditionally, and calling it twice would trap, so we use #[export_name] directly.
 // This requires duplicating the rest of the abstraction #[query] provides for us, like setting up the panic handler with
@@ -52,7 +52,8 @@ fn http_request(/* req: HttpRequest */) /* -> HttpResponse */
             witness(&url)
         )
         .into();
-        let mut path = url[1..].split('/')
+        let mut path = url[1..]
+            .split('/')
             .map(|segment| percent_decode_str(segment).decode_utf8().unwrap());
         let mut headers = HashMap::from_iter([
             (

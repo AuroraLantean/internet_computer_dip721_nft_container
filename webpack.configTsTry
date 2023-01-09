@@ -1,8 +1,8 @@
-const path = require('path');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
+import path from 'path';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
+import CopyPlugin from 'copy-webpack-plugin';
 
 function initCanisterEnv() {
   let localCanisters, prodCanisters;
@@ -52,8 +52,8 @@ const frontendDirectory = 'hello_frontend';
 
 const frontend_entry = path.join('src', frontendDirectory, 'src', 'index.html');
 
-//module.exports =  OR export default
-module.exports = {
+//module.exports
+export default {
   target: 'web',
   mode: isDevelopment ? 'development' : 'production',
   entry: {
