@@ -3,7 +3,10 @@
     "dip721_nft_container": {
       "candid": "src/dip721_nft_container/dip721-nft-container.did",
       "package": "dip721_nft_container",
-      "type": "rust"
+      "type": "rust",
+      "declarations": {
+        "node_compatibility": true
+      }
     },
     "hello_frontend": {
       "dependencies": [

@@ -1,4 +1,3 @@
-log1('checkpoint 00');
 import { Blob } from 'buffer';
 global.Blob = Blob;
 import { AssetManager } from '@slide-computer/assets';
@@ -34,15 +33,21 @@ const agent = new HttpAgent({
   fetch,
 }); //If we want to talk to the IC mainnet, the host should point to https://ic0.app.
 
-log1('checkpoint 2');
+log1(
+  'checkpoint 3',
+  canisterId?.toString(),
+  localCanisterIds.dip721_nft_container.local
+);
 const effectiveCanisterId =
-  canisterId?.toString() ?? localCanisterIds.nft.local;
+  canisterId?.toString() ?? localCanisterIds.dip721_nft_container.local;
 
-const assetCanisterId = localCanisterIds.asset.local;
+log1('checkpoint 4');
+const assetCanisterId = localCanisterIds.hello_frontend.local;
+log1('checkpoint 5');
 const actor = createActor(effectiveCanisterId, {
   agent,
 });
-log1('checkpoint 4');
+log1('checkpoint 6');
 
 const assetManager = new AssetManager({
   canisterId: assetCanisterId,
@@ -52,11 +57,11 @@ const assetManager = new AssetManager({
   maxChunkSize: 1900000, // Optional bytes (default: 1900000), size of chunks when file is uploaded as chunks.
 });
 
-log1('checkpoint 5');
+log1('checkpoint 7', nftConfig);
 // Prepare assets and metadata
 nftConfig.reduce(async (prev, nft, idx) => {
   await prev;
-  console.log('starting upload for ' + nft.asset);
+  log1('starting upload for ' + nft.asset);
 
   log1('nftConfig 1');
   // Parse metadata, if present
@@ -83,7 +88,7 @@ nftConfig.reduce(async (prev, nft, idx) => {
     height: 256,
     jpegOptions: { force: true, quality: 90 },
   };
-  console.log('generating thumbnail');
+  log1('nftConfig 5 generating thumbnail');
   const thumbnail = await imageThumbnail(filePath, options);
 
   log1('nftConfig 6');
@@ -95,7 +100,7 @@ nftConfig.reduce(async (prev, nft, idx) => {
       resolve(result);
     });
   });
-  console.log('detected contenttype of ', contentType);
+  log1('nftConfig 7 detected contenttype of ', contentType);
 
   /**
    * For asset in nfts.json
@@ -113,13 +118,13 @@ nftConfig.reduce(async (prev, nft, idx) => {
   const uploadedFilePath = `token/${idx}${path.extname(nft.asset)}`;
   const uploadedThumbnailPath = `thumbnail/${idx}.jpeg`;
 
-  console.log('uploading asset to ', uploadedFilePath);
+  log1('nftConfig 9 uploading asset to ', uploadedFilePath);
 
   log1('nftConfig 10');
   await assetManager.insert(file, { fileName: uploadedFilePath });
-  console.log('uploading thumbnail to ', uploadedThumbnailPath);
+  log1('nftConfig 11 uploading thumbnail to ', uploadedThumbnailPath);
 
-  log1('nftConfig 11');
+  log1('nftConfig 12');
   await assetManager.insert(thumbnail, { fileName: uploadedThumbnailPath });
 
   log1('nftConfig 13');
@@ -144,13 +149,14 @@ nftConfig.reduce(async (prev, nft, idx) => {
 
   log1('nftConfig 14');
   const principal = await (await identity).getPrincipal();
+  log1('nftConfig 15: mint');
   const mintResult = await actor.mint(principal, BigInt(idx), data);
-  console.log('result: ', mintResult);
+  log1('result: ', mintResult);
 
   const metaResult = await actor.tokenMetadata(0n);
-  console.log('new token info: ', metaResult);
+  log1('new token info: ', metaResult);
 
-  console.log(
+  log1(
     'token metadata: ',
     prettier.format(
       JSON.stringify(metaResult, (key, value) =>
@@ -159,4 +165,6 @@ nftConfig.reduce(async (prev, nft, idx) => {
       { parser: 'json' }
     )
   );
-});
+  log1('end');
+}, Promise.resolve(0));
+log1('end');

@@ -1,5 +1,9 @@
 archive
 removed
+.env
+.vscode
+yarn-error.log
+z*.sh
 
 # Various IDEs and Editors
 .vscode/

@@ -16,7 +16,11 @@ use std::result::Result as StdResult;
 
 use candid::{CandidType, Encode, Principal};
 use ic_cdk::{
-    api::{self, call},
+    api::{
+        self,
+        call::{self, CallResult, RejectionCode},
+    },
+    call,
     export::candid,
     storage,
 };
@@ -551,4 +555,19 @@ fn set_custodian(user: Principal, custodian: bool) -> Result<()> {
 #[query]
 fn is_custodian(principal: Principal) -> bool {
     STATE.with(|state| state.borrow().custodians.contains(&principal))
+}
+
+#[query]
+async fn get_price(my_canister_id: Principal) -> (u64, String) {
+    //let args = MyCustomTypeArgs { my_value };
+
+    let result: CallResult<(Option<u64>,)> =
+        call(my_canister_id, "get_something_my_function", (0,)).await; // Result<(Option<u64>,), (RejectionCode, String)>
+    match result {
+        Ok(enumop) => match enumop {
+            (Some(price),) => (price, "ok".to_string()),
+            (None,) => (0, "none".to_string()),
+        },
+        Err((_rejection_code, string)) => (0, string),
+    }
 }
