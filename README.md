@@ -9,6 +9,7 @@ Replacing Hello backend with dfinity Examples/dip721-nft-container, which uses t
 - Git
 - [DFX] version 0.12.1
 - [Rust] version 1.66.0 or later
+- [NodeJs] version 18.13.0
 
 ## Running Locally
 
@@ -42,6 +43,8 @@ The canister expects a record parameter with the following fields:
 - `symbol`: A short slug identifying your NFT collection. Required.
 - `logo`: The logo of your NFT collection, represented as a record with fields `data` (the base-64 encoded logo) and `logo_type` (the MIME type of the logo file). If unset, it will default to the Internet Computer logo.
 
+Remove `"type": "module",` in package.json
+
 initialize without logo:
 
 ```sh
@@ -68,6 +71,8 @@ dfx deploy --no-wallet --argument \
     custodians = opt vec { principal \"$(dfx identity get-principal)\" };
 })"
 ```
+
+### To Test the canister via Bash
 
 ```sh
 dfx canister id dip721_nft_container
@@ -175,6 +180,11 @@ dfx identity get-principal
 
 
 ```
+
+### To test the canister via NodeJs
+
+Add `"type": "module",` in package.json
+Run in bash: `node --es-module-specifier-resolution=node src/node/index.js`
 
 ## Interface
 

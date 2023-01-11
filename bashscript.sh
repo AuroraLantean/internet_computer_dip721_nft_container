@@ -44,6 +44,21 @@ elif [[ $1 == "3" ]]; then
   echo $YOU
   ALICE=$(dfx --identity alice identity get-principal)
   BOB=$(dfx --identity bob identity get-principal)
+  echo '(*) Creating NFT with metadata "nft_name:kingkong":'
+  dfx canister call dip721_nft_container mintDip721 \
+      "(principal\"$YOU\",\"nft_name:kingkong\")"
+  echo '(*) Metadata of the newly created NFT:'
+  dfx canister call dip721_nft_container getMetadataDip721 '(0:nat64)'
+
+elif [[ $1 == "3b" ]]; then
+  echo -e "option" $1
+  dfx identity new alice --disable-encryption || true
+  dfx identity new bob --disable-encryption || true
+  YOU=$(dfx identity get-principal)
+  sleep 2s
+  echo $YOU
+  ALICE=$(dfx --identity alice identity get-principal)
+  BOB=$(dfx --identity bob identity get-principal)
   echo '(*) Creating NFT with metadata "hello":'
   dfx canister call dip721_nft_container mintDip721 \
       "(principal\"$YOU\",vec{record{
@@ -61,6 +76,7 @@ elif [[ $1 == "3" ]]; then
           }
       }},blob\"hello\")"
   echo '(*) Metadata of the newly created NFT:'
+  dfx canister call dip721_nft_container getMetadataDip721 '(0:nat64)'
 
 elif [[ $1 == "99" ]]; then
   echo -e "option" $1

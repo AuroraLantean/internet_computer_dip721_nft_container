@@ -16,6 +16,7 @@ import {
   createActor,
 } from '../../src/declarations/dip721_nft_container/index.js';
 import { identity } from './identity.js';
+import { dip721_nft_container } from '../declarations/dip721_nft_container';
 
 const log1 = console.log;
 log1('checkpoint 1');
@@ -121,11 +122,11 @@ nftConfig.reduce(async (prev, nft, idx) => {
   log1('nftConfig 9 uploading asset to ', uploadedFilePath);
 
   log1('nftConfig 10');
-  await assetManager.insert(file, { fileName: uploadedFilePath });
+  //await assetManager.insert(file, { fileName: uploadedFilePath });
   log1('nftConfig 11 uploading thumbnail to ', uploadedThumbnailPath);
 
   log1('nftConfig 12');
-  await assetManager.insert(thumbnail, { fileName: uploadedThumbnailPath });
+  //await assetManager.insert(thumbnail, { fileName: uploadedThumbnailPath });
 
   log1('nftConfig 13');
   // Assemble the data and mint
@@ -149,7 +150,16 @@ nftConfig.reduce(async (prev, nft, idx) => {
 
   log1('nftConfig 14');
   const principal = await (await identity).getPrincipal();
-  log1('nftConfig 15: mint');
+  log1('principal:', principal);
+
+  const image = thumbnail;
+  const imageArray = await image.arrayBuffer();
+  const imageByteData = [...new Uint8Array(imageArray)];
+  await dip721_nft_container.mintDip721(principal, 'nft_name:monkey');
+  //args_0: Principal, args_1: MetadataDesc, args_2: Uint8Array)
+
+  return;
+  log1('nftConfig 15: to mint');
   const mintResult = await actor.mint(principal, BigInt(idx), data);
   log1('result: ', mintResult);
 

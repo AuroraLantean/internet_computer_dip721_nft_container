@@ -27,7 +27,7 @@ use ic_cdk::{
 use ic_certified_map::Hash;
 use include_base64::include_base64;
 
-mod http;
+//mod http;
 
 const MGMT: Principal = Principal::from_slice(&[]);
 
@@ -40,7 +40,7 @@ struct StableState {
     state: State,
     hashes: Vec<(String, Hash)>,
 }
-
+/*
 #[pre_upgrade]
 fn pre_upgrade() {
     let state = STATE.with(|state| mem::take(&mut *state.borrow_mut()));
@@ -56,6 +56,7 @@ fn post_upgrade() {
     let hashes = hashes.into_iter().collect();
     http::HASHES.with(|hashes0| *hashes0.borrow_mut() = hashes);
 }
+ */
 
 #[derive(CandidType, Deserialize)]
 struct InitArgs {
@@ -220,10 +221,10 @@ fn get_metadata(/* token_id: u64 */) /* -> Result<&'static MetadataDesc> */
         Ok(())
     });
     if let Err(e) = res {
-        call::reply((Err::<MetadataDesc, _>(e),));
+        call::reply((Err::<String, _>(e),));
     }
 }
-
+/*
 #[derive(CandidType)]
 struct ExtendedMetadataResult<'a> {
     metadata_desc: MetadataDescRef<'a>,
@@ -249,6 +250,7 @@ fn get_metadata_for_user(/* user: Principal */) /* -> Vec<ExtendedMetadataResult
         call::reply((metadata,));
     });
 }
+*/
 
 // ----------------------
 // notification interface
@@ -373,8 +375,8 @@ fn is_approved_for_all(operator: Principal) -> bool {
 #[update(name = "mintDip721")]
 fn mint(
     to: Principal,
-    metadata: MetadataDesc,
-    blob_content: Vec<u8>,
+    metadata: String,
+    //blob_content: Vec<u8>,
 ) -> Result<MintResult, ConstrainedError> {
     let (txid, tkid) = STATE.with(|state| {
         let mut state = state.borrow_mut();
@@ -387,12 +389,12 @@ fn mint(
             approved: None,
             id: new_id,
             metadata,
-            content: blob_content,
+            //content: blob_content,
         };
         state.nfts.push(nft);
         Ok((state.next_txid(), new_id))
     })?;
-    http::add_hash(tkid);
+    //http::add_hash(tkid);
     Ok(MintResult {
         id: txid,
         token_id: tkid,
@@ -436,12 +438,12 @@ struct Nft {
     owner: Principal,
     approved: Option<Principal>,
     id: u64,
-    metadata: MetadataDesc,
-    content: Vec<u8>,
+    metadata: String, //MetadataDesc
+                      //content: Vec<u8>,
 }
 
-type MetadataDesc = Vec<MetadataPart>;
-type MetadataDescRef<'a> = &'a [MetadataPart];
+//type MetadataDesc = Vec<MetadataPart>;
+//type MetadataDescRef<'a> = &'a [MetadataPart];
 
 #[derive(CandidType, Deserialize)]
 struct MetadataPart {
@@ -558,11 +560,11 @@ fn is_custodian(principal: Principal) -> bool {
 }
 
 #[query]
-async fn get_price(my_canister_id: Principal) -> (u64, String) {
+async fn get_price(my_canister_id: Principal, num: u64) -> (u64, String) {
     //let args = MyCustomTypeArgs { my_value };
 
     let result: CallResult<(Option<u64>,)> =
-        call(my_canister_id, "get_something_my_function", (0,)).await; // Result<(Option<u64>,), (RejectionCode, String)>
+        call(my_canister_id, "get_something_my_function", (num,)).await; // Result<(Option<u64>,), (RejectionCode, String)>
     match result {
         Ok(enumop) => match enumop {
             (Some(price),) => (price, "ok".to_string()),
