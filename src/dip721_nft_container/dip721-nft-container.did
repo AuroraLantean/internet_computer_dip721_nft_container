@@ -142,6 +142,7 @@ service : (InitArgs) -> {
     setApprovalForAllDip721 : (operator : principal, isApproved : bool) -> (TxReceipt);
     getApprovedDip721 : (token_id : nat64) -> (TxReceipt) query;
     isApprovedForAllDip721 : (operator : principal) -> (bool) query;
+    get_price : (target_canister_id : principal) -> (nat64, text);
     mintDip721 : (to : principal, metadata : text) -> (MintReceipt);
     burnDip721 : (token_id : nat64) -> (TxReceipt);
 

@@ -8,6 +8,11 @@
         "node_compatibility": true
       }
     },
+    "hello": {
+      "candid": "src/hello/hello.did",
+      "package": "hello",
+      "type": "rust"
+    },
     "hello_frontend": {
       "dependencies": [
         "dip721_nft_container"

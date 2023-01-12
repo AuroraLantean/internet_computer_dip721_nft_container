@@ -20,20 +20,79 @@ git clone git@github.com:AuroraLantean/internet_computer_nft.git dip721-nft-cont
 cd dip721-nft-container
 dfx help
 dfx canister --help
+```
 
+## Update the project Cargo.toml
+
+Add the new canister into the Cargo.toml at the project root
+
+```
+[workspace]
+members = [
+    "src/dip721_nft_container",
+    "src/hello",
+]
+```
+
+## Update dfx.json
+
+Include all the canisters you want to deploy in the dfx.json file. Remember to add canister `rust` type if it is written in Rust, and add `node_compatibility` if you want to call it from NodeJs.
+
+```
+      "type": "rust",
+      "declarations": {
+        "node_compatibility": true
+      }
+```
+
+## Check Rust canister code
+
+```sh
+cargo check
+```
+
+## Start the dfinity network:
+
+```sh
 dfx start --background --clean
 ```
 
-### To deploy the canister
+## Generate canisters
 
-```rust
-struct InitArgs {
-    custodians: Option<HashSet<Principal>>,
-    logo: Option<LogoResult>,
-    name: String,
-    symbol: String,
-}
-fn init(args: InitArgs) {}
+Then create canisters. That is to creates the .dfx/local directory and adds the canister_ids.json file to that directory.
+
+```sh
+dfx canister create --all
+```
+
+Or if you just want to create one canister:
+`dfx canister create dip721_nft_container`
+
+### Deploy Hello canister
+
+```sh
+  dfx deploy hello --no-wallet --argument \
+  "(record {
+      name = \"Hello Canister Name\";
+      price = 174;
+      custodians = opt vec { principal \"$(dfx identity get-principal)\" };
+  })"
+```
+
+### Deploy dip721_nft_container canister
+
+```sh
+  dfx deploy dip721_nft_container --no-wallet --argument \
+  "(record {
+      name = \"Gold\";
+      symbol = \"GLD\";
+      logo = opt record {
+          data = \"$(base64 -i ./logo.png)\";
+          logo_type = \"image/png\";
+      };
+      custodians = opt vec { principal \"$(dfx identity get-principal)\" };
+  })"
+
 ```
 
 The canister expects a record parameter with the following fields:
@@ -45,7 +104,7 @@ The canister expects a record parameter with the following fields:
 
 Remove `"type": "module",` in package.json
 
-initialize without logo:
+to deploy without logo:
 
 ```sh
 dfx deploy --no-wallet --argument \
@@ -57,19 +116,16 @@ dfx deploy --no-wallet --argument \
 })"
 ```
 
-OR with logo image
+## Make declaration files
 
-```sh
-dfx deploy --no-wallet --argument \
-"(record {
-    name = \"Gold\";
-    symbol = \"GLD\";
-    logo = opt record {
-        data = \"$(base64 -i ./logo.png)\";
-        logo_type = \"image/png\";
-    };
-    custodians = opt vec { principal \"$(dfx identity get-principal)\" };
-})"
+if you change any canister function input and/or output, OR add/delete any canister function, OR add new canister, you must update the dip721-nft-container.did file and/or other canister did files manually.
+
+To generate the declaration files.
+
+```
+dfx generate dip721_nft_container
+dfx generate hello
+dfx generate hello_frontend
 ```
 
 ### To Test the canister via Bash

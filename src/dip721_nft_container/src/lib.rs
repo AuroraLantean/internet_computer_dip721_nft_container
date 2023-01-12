@@ -10,7 +10,7 @@ use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::convert::TryFrom;
 use std::iter::FromIterator;
-use std::mem;
+//use std::mem;
 use std::num::TryFromIntError;
 use std::result::Result as StdResult;
 
@@ -22,9 +22,9 @@ use ic_cdk::{
     },
     call,
     export::candid,
-    storage,
+    //storage,
 };
-use ic_certified_map::Hash;
+//use ic_certified_map::Hash;
 use include_base64::include_base64;
 
 //mod http;
@@ -35,12 +35,11 @@ thread_local! {
     static STATE: RefCell<State> = RefCell::default();
 }
 
-#[derive(CandidType, Deserialize)]
+/*#[derive(CandidType, Deserialize)]
 struct StableState {
     state: State,
     hashes: Vec<(String, Hash)>,
 }
-/*
 #[pre_upgrade]
 fn pre_upgrade() {
     let state = STATE.with(|state| mem::take(&mut *state.borrow_mut()));
@@ -368,6 +367,19 @@ fn is_approved_for_all(operator: Principal) -> bool {
     })
 }
 
+#[update]
+async fn get_price(target_canister_id: Principal) -> (u64, String) {
+    //let args = MyCustomTypeArgs { my_value };
+
+    let result: CallResult<(Option<u64>,)> = call(target_canister_id, "get_price", ()).await; // Result<(Option<u64>,), (RejectionCode, String)>
+    match result {
+        Ok(enumop) => match enumop {
+            (Some(price),) => (price, "ok".to_string()),
+            (None,) => (0, "none".to_string()),
+        },
+        Err((_rejection_code, string)) => (0, string),
+    }
+}
 // --------------
 // mint interface
 // --------------
@@ -557,19 +569,4 @@ fn set_custodian(user: Principal, custodian: bool) -> Result<()> {
 #[query]
 fn is_custodian(principal: Principal) -> bool {
     STATE.with(|state| state.borrow().custodians.contains(&principal))
-}
-
-#[query]
-async fn get_price(my_canister_id: Principal, num: u64) -> (u64, String) {
-    //let args = MyCustomTypeArgs { my_value };
-
-    let result: CallResult<(Option<u64>,)> =
-        call(my_canister_id, "get_something_my_function", (num,)).await; // Result<(Option<u64>,), (RejectionCode, String)>
-    match result {
-        Ok(enumop) => match enumop {
-            (Some(price),) => (price, "ok".to_string()),
-            (None,) => (0, "none".to_string()),
-        },
-        Err((_rejection_code, string)) => (0, string),
-    }
 }

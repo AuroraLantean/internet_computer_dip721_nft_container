@@ -4,9 +4,40 @@
 echo -e "Running run.sh ..."
 echo -e "option: $1 $2";
 
-if [[ $1 == "1" ]]; then
+if [[ $1 == "0" ]]; then
   echo -e "option" $1
-  dfx deploy --no-wallet --argument \
+  echo 'cargo check'
+  cargo check
+  dfx start --background --clean
+  sleep 2s
+  echo 'dfx canister create --all'
+  dfx canister create --all
+  #dfx canister create dip721_nft_container
+  #dfx canister create hello
+  #dfx canister create hello_frontend
+
+
+elif [[ $1 == "1" ]]; then
+  echo -e "option" $1
+  #dfx canister install --all
+  dfx deploy hello --no-wallet --argument \
+  "(record {
+      name = \"Hello Canister Name\";
+      price = 174;
+      custodians = opt vec { principal \"$(dfx identity get-principal)\" };
+  })"
+  echo 'hello has been deployed'
+  dfx canister id hello
+  hello_id=$(dfx canister id hello)
+  echo 'hello_id' $hello_id
+  echo ''
+  echo 'generate hello declaration files'
+  dfx generate hello
+  dfx generate hello_frontend
+
+elif [[ $1 == "2" ]]; then
+  echo -e "option" $1
+  dfx deploy dip721_nft_container --no-wallet --argument \
   "(record {
       name = \"Gold\";
       symbol = \"GLD\";
@@ -16,8 +47,16 @@ if [[ $1 == "1" ]]; then
       };
       custodians = opt vec { principal \"$(dfx identity get-principal)\" };
   })"
+  echo 'dip721_nft_container has been deployed'
+  dfx canister id dip721_nft_container
+  dip721_nft_container_id=$(dfx canister id dip721_nft_container)
+  echo 'dip721_nft_container_id' $dip721_nft_container_id
+  echo ''
+  echo 'generate dip721_nft_container declaration files'
+  dfx generate dip721_nft_container
 
-elif [[ $1 == "1b" ]]; then
+
+elif [[ $1 == "2b" ]]; then
   echo -e "option" $1
   dfx deploy --no-wallet --argument \
   "(record {
@@ -27,15 +66,42 @@ elif [[ $1 == "1b" ]]; then
       custodians = opt vec { principal \"$(dfx identity get-principal)\" };
   })"
 
-elif [[ $1 == "2" ]]; then
+elif [[ $1 == "3" ]]; then
   echo -e "option" $1
   dfx canister id dip721_nft_container
+  dip721_id=$(dfx canister id dip721_nft_container)
+  echo 'dip721_id:' $dip721_id
   dfx canister call dip721_nft_container nameDip721 '()'
   dfx canister call dip721_nft_container symbolDip721 '()'
+  echo 'totalSupply:'
   dfx canister call dip721_nft_container totalSupplyDip721 '()'
   #dfx canister call dip721_nft_container logoDip721 '()'
+  dfx canister id hello
+  hello_id=$(dfx canister id hello)
+  echo 'hello_id:' $hello_id
+  dfx canister call hello greet 'JohnDoe'
+  echo 'call hello get_name()'
+  dfx canister call hello get_name '()'
+  echo 'call hello get_price()'
+  dfx canister call hello get_price '()'
 
-elif [[ $1 == "3" ]]; then
+  echo 'call hello set_name()'
+  dfx canister call hello set_name 'Silver'
+  echo 'call hello get_name()'
+  dfx canister call hello get_name '()'
+
+  echo 'call hello set_price()'
+  dfx canister call hello set_price '(175:nat64)'
+  echo 'call hello get_price()'
+  dfx canister call hello get_price '()'
+
+elif [[ $1 == "4" ]]; then
+  echo -e "option" $1
+  echo 'call get_price from dip721 to hello'
+  hello_id=$(dfx canister id hello)
+  dfx canister call dip721_nft_container get_price "(principal\"$hello_id\")"
+
+elif [[ $1 == "5" ]]; then
   echo -e "option" $1
   dfx identity new alice --disable-encryption || true
   dfx identity new bob --disable-encryption || true
@@ -44,13 +110,13 @@ elif [[ $1 == "3" ]]; then
   echo $YOU
   ALICE=$(dfx --identity alice identity get-principal)
   BOB=$(dfx --identity bob identity get-principal)
-  echo '(*) Creating NFT with metadata "nft_name:kingkong":'
+  echo '(*) Creating NFT with metadata "nft_name:King-Kong":'
   dfx canister call dip721_nft_container mintDip721 \
-      "(principal\"$YOU\",\"nft_name:kingkong\")"
+      "(principal\"$YOU\",\"nft_name:King-Kong\")"
   echo '(*) Metadata of the newly created NFT:'
   dfx canister call dip721_nft_container getMetadataDip721 '(0:nat64)'
 
-elif [[ $1 == "3b" ]]; then
+elif [[ $1 == "5zz" ]]; then
   echo -e "option" $1
   dfx identity new alice --disable-encryption || true
   dfx identity new bob --disable-encryption || true
