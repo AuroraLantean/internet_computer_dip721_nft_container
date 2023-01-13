@@ -2,14 +2,28 @@
 
 ## Summary
 
-Replacing Hello backend with dfinity Examples/dip721-nft-container, which uses the [DIP721] v1 standard.
+- npm run once: run this once for setting up admin, john, alice, bob identities. john is acting as a hacker. alice and bob are acting as users.
+- npm run d0: check Rust code, start dfx environment, use admin identity
+- npm run d1: deploy hello canister
+- npm run d2: deploy dip721_nft_container canister
+- npm run d3: call some simple hello and dip721 canister functions
+- npm run d4: call dip721 canister function, which will call hello get_price function for inter-canister calls
+- npm run d5: use admin identity to mint
+- npm run d5a: use john identity to mint
+
+- npm run d9 : call a NodeJs script to invoke minting
+  ... although this will return error message, but when you call this again, it will show both NFT totalSupply and your NFT balance have increased by 1...
+
+Conclusion1: dfinity does not have good or updated support for Rust code, so it cannot auto generate DID files, which are required to generate JavaScript interface files for NodeJs script. That is causing minting from NodeJs difficult.
+
+Conclusion2: I could not use the seed phrases generated from dfx command tool to generate the same identity in the JavaScript. Not sure what is going on... So security tests cannot be performed as the JavaScript library cannot use the same identity that CLI has generated.
 
 ## Setup / Installation
 
 - Git
 - [DFX] version 0.12.1
 - [Rust] version 1.66.0 or later
-- [NodeJs] version 18.13.0
+- [NodeJs] version 19.4.0
 
 ## Running Locally
 

@@ -16,8 +16,10 @@ import {
   createActor,
 } from '../../src/declarations/dip721_nft_container/index.js';
 import { identity } from './identity.js';
-import { dip721_nft_container } from '../declarations/dip721_nft_container';
+//import { dip721_nft_container } from '../declarations/dip721_nft_container';
 
+//import { dip721_nft_container } from '../declarations/dip721_nft_container';
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const log1 = console.log;
 log1('checkpoint 1');
 const require = createRequire(import.meta.url);
@@ -25,7 +27,8 @@ const localCanisterIds = require('../../.dfx/local/canister_ids.json');
 const nftConfig = require('./nfts.json');
 const encoder = new TextEncoder();
 
-log1('checkpoint 2');
+log1('checkpoint 2'); //http://127.0.0.1:4943/
+//log1(LOCAL_HOST + LOCAL_PORT)
 //package.json:   "type": "module",
 const localport = '4943';
 const agent = new HttpAgent({
@@ -42,10 +45,10 @@ log1(
 const effectiveCanisterId =
   canisterId?.toString() ?? localCanisterIds.dip721_nft_container.local;
 
-log1('checkpoint 4');
+log1('checkpoint 4. effectiveCanisterId:', effectiveCanisterId);
 const assetCanisterId = localCanisterIds.hello_frontend.local;
 log1('checkpoint 5');
-const actor = createActor(effectiveCanisterId, {
+const admin_actor = createActor(effectiveCanisterId, {
   agent,
 });
 log1('checkpoint 6');
@@ -152,18 +155,53 @@ nftConfig.reduce(async (prev, nft, idx) => {
   const principal = await (await identity).getPrincipal();
   log1('principal:', principal);
 
+  /*
+  let totalsuply = await dip721_nft_container.totalSupplyDip721();
+  log1('totalsuply:', totalsuply);
+  let balance1 = await dip721_nft_container.balanceOfDip721(principal);
+  log1('balance1:', balance1);
   const image = thumbnail;
   const imageArray = await image.arrayBuffer();
   const imageByteData = [...new Uint8Array(imageArray)];
   await dip721_nft_container.mintDip721(principal, 'nft_name:monkey');
   //args_0: Principal, args_1: MetadataDesc, args_2: Uint8Array)
+*/
+  //return;
+  let nameDip721 = await admin_actor.nameDip721();
+  log1('nameDip721:', nameDip721);
+  await delay(3000);
 
-  return;
+  let totalsuply = await admin_actor.totalSupplyDip721();
+  log1('totalsuply:', totalsuply);
+  await delay(3000);
+
+  let balance1 = await admin_actor.balanceOfDip721(principal);
+  log1('balance1:', balance1);
+  await delay(3000);
+
+  // let metaResult = await admin_actor.getMetadataDip721(0n);
+  // log1('token 0n info: ', metaResult);
+  // await delay(3000);
+
   log1('nftConfig 15: to mint');
-  const mintResult = await actor.mint(principal, BigInt(idx), data);
-  log1('result: ', mintResult);
+  const mintResult = await admin_actor.mintDip721forall(
+    principal,
+    'nft_name:Donkey'
+  );
+  /*const mintResult = await admin_actor.mintDip721(
+    principal,
+    'nft_name:King-Kong'
+  );*/
+  //const mintResult = await admin_actor.mintDip721(principal, BigInt(idx), data);
+  log1('mint result: ', mintResult);
+  await delay(3000);
 
-  const metaResult = await actor.tokenMetadata(0n);
+  log1('nftConfig 17');
+  balance1 = await admin_actor.balanceOfDip721(principal);
+  log1('nftConfig 18. balance1:', balance1);
+  await delay(3000);
+
+  metaResult = await admin_actor.getMetadataDip721(0n);
   log1('new token info: ', metaResult);
 
   log1(

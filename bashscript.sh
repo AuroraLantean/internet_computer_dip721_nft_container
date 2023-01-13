@@ -4,7 +4,21 @@
 echo -e "Running run.sh ..."
 echo -e "option: $1 $2";
 
-if [[ $1 == "0" ]]; then
+if [[ $1 == "once" ]]; then
+  echo -e "option" $1
+  dfx identity new admin --force --disable-encryption || true
+  dfx identity use admin
+  dfx identity get-principal
+
+  dfx identity new alice --disable-encryption || true
+  dfx identity use alice
+  dfx identity get-principal
+
+  dfx identity new bob --disable-encryption || true
+  dfx identity use bob
+  dfx identity get-principal
+
+elif [[ $1 == "0" ]]; then
   echo -e "option" $1
   echo 'cargo check'
   cargo check
@@ -15,7 +29,9 @@ if [[ $1 == "0" ]]; then
   #dfx canister create dip721_nft_container
   #dfx canister create hello
   #dfx canister create hello_frontend
-
+  dfx identity use admin
+  echo 'admin principal'
+  dfx identity get-principal
 
 elif [[ $1 == "1" ]]; then
   echo -e "option" $1
@@ -91,7 +107,7 @@ elif [[ $1 == "3" ]]; then
   dfx canister call hello get_name '()'
 
   echo 'call hello set_price()'
-  dfx canister call hello set_price '(175:nat64)'
+  dfx canister call hello set_price '(185:nat64)'
   echo 'call hello get_price()'
   dfx canister call hello get_price '()'
 
@@ -103,25 +119,37 @@ elif [[ $1 == "4" ]]; then
 
 elif [[ $1 == "5" ]]; then
   echo -e "option" $1
-  dfx identity new alice --disable-encryption || true
-  dfx identity new bob --disable-encryption || true
+  dfx identity use admin
   YOU=$(dfx identity get-principal)
-  sleep 2s
   echo $YOU
-  ALICE=$(dfx --identity alice identity get-principal)
-  BOB=$(dfx --identity bob identity get-principal)
   echo '(*) Creating NFT with metadata "nft_name:King-Kong":'
   dfx canister call dip721_nft_container mintDip721 \
       "(principal\"$YOU\",\"nft_name:King-Kong\")"
-  echo '(*) Metadata of the newly created NFT:'
-  dfx canister call dip721_nft_container getMetadataDip721 '(0:nat64)'
+  echo '(*) Number of NFTs you own:'
+  dfx canister call dip721_nft_container balanceOfDip721 "(principal\"$YOU\")"
+
+elif [[ $1 == "5a" ]]; then
+  echo -e "option" $1
+  YOU=$(dfx identity get-principal)
+  echo 'current identity:' $YOU
+  dfx identity use john
+  echo 'john principal:'
+  dfx identity get-principal
+  YOU=$(dfx identity get-principal)
+
+  echo '(*) Creating NFT with metadata "nft_name:Kiwi":'
+  dfx canister call dip721_nft_container mintDip721forall \
+      "(principal\"$YOU\",\"nft_name:Kiwi\")"
+  echo '(*) Number of NFTs you own:'
+  dfx canister call dip721_nft_container balanceOfDip721 "(principal\"$YOU\")"
+  #echo '(*) Metadata of the newly created NFT:'
+  #dfx canister call dip721_nft_container getMetadataDip721 '(0:nat64)'
 
 elif [[ $1 == "5zz" ]]; then
   echo -e "option" $1
-  dfx identity new alice --disable-encryption || true
-  dfx identity new bob --disable-encryption || true
   YOU=$(dfx identity get-principal)
-  sleep 2s
+  ALICE=$(dfx --identity alice identity get-principal)
+  BOB=$(dfx --identity bob identity get-principal)
   echo $YOU
   ALICE=$(dfx --identity alice identity get-principal)
   BOB=$(dfx --identity bob identity get-principal)
@@ -157,7 +185,7 @@ elif [[ $1 == "99" ]]; then
   echo '(*) Number of NFTs Bob owns:'
   dfx canister call dip721_nft_container balanceOfDip721 "(principal\"$BOB\")"
 
-elif [[ $1 == "4" ]]; then
+elif [[ $1 == "6" ]]; then
   echo -e "option" $1
   YOU=$(dfx identity get-principal)
   ALICE=$(dfx --identity alice identity get-principal)
@@ -177,7 +205,7 @@ elif [[ $1 == "4" ]]; then
   echo '(*) Total NFTs in existence:'
   dfx canister call dip721_nft_container totalSupplyDip721
 
-elif [[ $1 == "5" ]]; then
+elif [[ $1 == "7" ]]; then
   echo -e "option" $1
   YOU=$(dfx identity get-principal)
   ALICE=$(dfx --identity alice identity get-principal)
@@ -192,7 +220,7 @@ elif [[ $1 == "5" ]]; then
   echo '(*) Number of NFTs Alice owns:'
   dfx canister call dip721_nft_container balanceOfDip721 "(principal\"$ALICE\")"
 
-elif [[ $1 == "6" ]]; then
+elif [[ $1 == "8" ]]; then
   echo -e "option" $1
   YOU=$(dfx identity get-principal)
   ALICE=$(dfx --identity alice identity get-principal)

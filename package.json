@@ -8,7 +8,7 @@
     "JavaScript",
     "Canister"
   ],
-
+  "type": "module",
   "scripts": {
     "type": "module",
     "build": "webpack",
@@ -21,6 +21,7 @@
     "d00": "dfx stop",
     "d0c": "dfx start --background --clean",
     "d0d": "dfx start --background",
+    "once": "./bashscript.sh once",
     "d0": "./bashscript.sh 0",
     "d1": "./bashscript.sh 1",
     "d2": "./bashscript.sh 2",
@@ -28,6 +29,7 @@
     "d3": "./bashscript.sh 3",
     "d4": "./bashscript.sh 4",
     "d5": "./bashscript.sh 5",
+    "d5a": "./bashscript.sh 5a",
     "d7": "./bashscript.sh 7",
     "d8": "./bashscript.sh 8",
     "d9": "node --es-module-specifier-resolution=node src/node/index.js",

@@ -413,6 +413,33 @@ fn mint(
     })
 }
 
+#[update(name = "mintDip721forall")]
+fn mint_forall(
+    to: Principal,
+    metadata: String,
+    //blob_content: Vec<u8>,
+) -> Result<MintResult, ConstrainedError> {
+    let (txid, tkid) = STATE.with(|state| {
+        let mut state = state.borrow_mut();
+
+        let new_id = state.nfts.len() as u64;
+        let nft = Nft {
+            owner: to,
+            approved: None,
+            id: new_id,
+            metadata,
+            //content: blob_content,
+        };
+        state.nfts.push(nft);
+        Ok((state.next_txid(), new_id))
+    })?;
+    //http::add_hash(tkid);
+    Ok(MintResult {
+        id: txid,
+        token_id: tkid,
+    })
+}
+
 // --------------
 // burn interface
 // --------------
