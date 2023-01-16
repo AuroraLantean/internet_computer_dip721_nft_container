@@ -30,8 +30,8 @@ struct InitArgs {
     price: u64,
 }
 
-#[candid_method(update)]
 #[init]
+#[candid_method(init)]
 fn init(args: InitArgs) {
     STATE.with(|state| {
         let mut state = state.borrow_mut();
@@ -42,18 +42,18 @@ fn init(args: InitArgs) {
         state.price = args.price;
     });
 }
+#[query()]
 #[candid_method(query)]
-#[query]
 fn greet(name: String) -> String {
     format!("Hello, {}!", name)
 }
+#[query()]
 #[candid_method(query)]
-#[query]
 fn get_name() -> String {
     STATE.with(|state| state.borrow().name.clone())
 }
+#[query()]
 #[candid_method(query)]
-#[query]
 fn get_price() -> u64 {
     STATE.with(|state| state.borrow().price.clone())
 }
@@ -64,36 +64,36 @@ enum Error {
     InvalidTokenId,
     ZeroAddress,
     Other,
+    ZeroValue,
+    EmptyString,
 }
 type Result<T = u64, E = Error> = StdResult<T, E>;
 
-#[candid_method(update)]
 #[update]
-fn set_name(name: String) -> Result<()> {
-    STATE.with(|state| {
-        let mut state = state.borrow_mut();
-        state.name = name;
-        Ok(())
-        /*if state.custodians.contains(&api::caller()) {
+#[candid_method(update)]
+fn set_name(name: String) -> Result<u64, Error> {
+    if name.is_empty() {
+        Err(Error::EmptyString)
+    } else {
+        STATE.with(|state| {
+            let mut state = state.borrow_mut();
             state.name = name;
-            Ok(())
-        } else {
-            Err(Error::Unauthorized)
-        }*/
-    })
+            Ok(0)
+        })
+    }
+    /*if state.custodians.contains(&api::caller()) { } else { Err(Error::Unauthorized)}*/
 }
-#[candid_method(update)]
 #[update]
-fn set_price(price: u64) -> Result<()> {
-    STATE.with(|state| {
-        let mut state = state.borrow_mut();
-        state.price = price;
-        Ok(())
-        /*if state.custodians.contains(&api::caller()) {
+#[candid_method(update)]
+fn set_price(price: u64) -> Result<u64, Error> {
+    if price == 0 {
+        Err(Error::ZeroValue)
+    } else {
+        STATE.with(|state| {
+            let mut state = state.borrow_mut();
             state.price = price;
-            Ok(())
-        } else {
-            Err(Error::Unauthorized)
-        }*/
-    })
+            Ok(0)
+        })
+    }
+    /*if state.custodians.contains(&api::caller()) { } else { Err(Error::Unauthorized)}*/
 }

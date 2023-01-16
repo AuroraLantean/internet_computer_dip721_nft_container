@@ -65,6 +65,12 @@ Include all the canisters you want to deploy in the dfx.json file. Remember to a
 cargo check
 ```
 
+## Install frontend dependencies
+
+```
+npm install
+```
+
 ## Start the dfinity network:
 
 ```sh
@@ -73,7 +79,8 @@ dfx start --background --clean
 
 ## Generate canisters
 
-Then create canisters. That is to creates the .dfx/local directory and adds the canister_ids.json file to that directory.
+This is optional. `dfx deploy` will include this.
+To creates the .dfx/local directory and adds the canister_ids.json file to that directory:
 
 ```sh
 dfx canister create --all
@@ -81,6 +88,10 @@ dfx canister create --all
 
 Or if you just want to create one canister:
 `dfx canister create dip721_nft_container`
+
+## Update the DID file for each canister
+
+Currently, dfx cannot automatically generate DID files for Rust canisters. So you have to manually write each DID file for each Rust canisters. Then when you run `dfx deploy you_canister_name`, the JavaScript interface file for that canister will be automatically generated.
 
 ### Deploy Hello canister
 
@@ -91,6 +102,14 @@ Or if you just want to create one canister:
       price = 174;
       custodians = opt vec { principal \"$(dfx identity get-principal)\" };
   })"
+  dfx generate hello
+```
+
+### Deploy Hello_Frontend canister
+
+```sh
+  dfx deploy hello_frontend --no-wallet
+  dfx generate hello_frontend
 ```
 
 ### Deploy dip721_nft_container canister
@@ -106,7 +125,7 @@ Or if you just want to create one canister:
       };
       custodians = opt vec { principal \"$(dfx identity get-principal)\" };
   })"
-
+  dfx generate dip721_nft_container
 ```
 
 The canister expects a record parameter with the following fields:

@@ -84,6 +84,8 @@ enum Error {
     InvalidTokenId,
     ZeroAddress,
     Other,
+    ZeroValue,
+    EmptyString,
 }
 
 impl From<TryFromIntError> for Error {
@@ -202,6 +204,19 @@ const DEFAULT_LOGO: LogoResult = LogoResult {
 #[query(name = "totalSupplyDip721")]
 fn total_supply() -> u64 {
     STATE.with(|state| state.borrow().nfts.len() as u64)
+}
+#[query(name = "get_metadata_v2")]
+fn get_metadata_v2(token_id: u64) -> Result<String, Error> {
+    let res: Result<String, Error> = STATE.with(|state| {
+        let state = state.borrow();
+        let metadata = &state
+            .nfts
+            .get(usize::try_from(token_id)?)
+            .ok_or(Error::InvalidTokenId)?
+            .metadata;
+        Ok((*metadata).clone())
+    });
+    res
 }
 
 #[export_name = "canister_query getMetadataDip721"]
@@ -440,6 +455,35 @@ fn mint_forall(
     })
 }
 
+#[update(name = "set_metadata")]
+fn set_metadata(
+    nft_id: u64,
+    metadata: String,
+    //blob_content: Vec<u8>,
+) -> Result<u64, Error> {
+    STATE.with(|state| {
+        let mut state = state.borrow_mut();
+        if !state.custodians.contains(&api::caller()) {
+            return Err(Error::Unauthorized);
+        }
+        let nft_old = state.nfts.get(nft_id as usize);
+        match nft_old {
+            Some(nft) => {
+                let nft_new = Nft {
+                    owner: nft.owner,
+                    approved: nft.approved,
+                    id: nft_id,
+                    metadata,
+                    //content: blob_content,
+                };
+                state.nfts.insert(nft_id as usize, nft_new);
+                Ok(0)
+            }
+            None => Err(Error::InvalidTokenId),
+        }
+    })
+}
+
 // --------------
 // burn interface
 // --------------
@@ -538,12 +582,12 @@ enum ConstrainedError {
 }
 
 #[update]
-fn set_name(name: String) -> Result<()> {
+fn set_name(name: String) -> Result<u64, Error> {
     STATE.with(|state| {
         let mut state = state.borrow_mut();
         if state.custodians.contains(&api::caller()) {
             state.name = name;
-            Ok(())
+            Ok(0)
         } else {
             Err(Error::Unauthorized)
         }
@@ -551,12 +595,12 @@ fn set_name(name: String) -> Result<()> {
 }
 
 #[update]
-fn set_symbol(sym: String) -> Result<()> {
+fn set_symbol(sym: String) -> Result<u64, Error> {
     STATE.with(|state| {
         let mut state = state.borrow_mut();
         if state.custodians.contains(&api::caller()) {
             state.symbol = sym;
-            Ok(())
+            Ok(0)
         } else {
             Err(Error::Unauthorized)
         }
@@ -564,12 +608,12 @@ fn set_symbol(sym: String) -> Result<()> {
 }
 
 #[update]
-fn set_logo(logo: Option<LogoResult>) -> Result<()> {
+fn set_logo(logo: Option<LogoResult>) -> Result<u64, Error> {
     STATE.with(|state| {
         let mut state = state.borrow_mut();
         if state.custodians.contains(&api::caller()) {
             state.logo = logo;
-            Ok(())
+            Ok(0)
         } else {
             Err(Error::Unauthorized)
         }
@@ -577,7 +621,7 @@ fn set_logo(logo: Option<LogoResult>) -> Result<()> {
 }
 
 #[update]
-fn set_custodian(user: Principal, custodian: bool) -> Result<()> {
+fn set_custodian(user: Principal, custodian: bool) -> Result<u64, Error> {
     STATE.with(|state| {
         let mut state = state.borrow_mut();
         if state.custodians.contains(&api::caller()) {
@@ -586,7 +630,7 @@ fn set_custodian(user: Principal, custodian: bool) -> Result<()> {
             } else {
                 state.custodians.remove(&user);
             }
-            Ok(())
+            Ok(0)
         } else {
             Err(Error::Unauthorized)
         }
