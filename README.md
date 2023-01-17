@@ -6,12 +6,19 @@
 - npm run d0: check Rust code, start dfx environment, use admin identity
 - npm run d1: deploy hello canister
 - npm run d2: deploy dip721_nft_container canister
-- npm run d3: call some simple hello and dip721 canister functions
-- npm run d4: call dip721 canister function, which will call hello get_price function for inter-canister calls
-- npm run d5: use admin identity to mint
-- npm run d5a: use john identity to mint
+- npm run d3: deploy hello_frontend canister
+- npm run d4: call some simple hello and dip721 canister functions
+- npm run d5: call dip721 canister function, which will call hello get_price function for inter-canister calls
+- npm run d6: use admin identity to mint one NFT
+- npm run d6b: use admin identity to set minted NFT metadata
+- npm run d6a: use john identity to mint one NFT
+- npm run d7: get balances of admin, alice, bob
+- npm run d8: transfer one NFT from admin to Alice
+- npm run d9: approveDip721, setApprovalForAllDip721
 
-- npm run d9 : call a NodeJs script to invoke minting
+- npm run d12 : call a NodeJs script to invoke minting
+- npm run d11 : call a NodeJs script to invoke minting
+  ... add `"type": "module",` to package.json before calling
   ... although this will return error message, but when you call this again, it will show both NFT totalSupply and your NFT balance have increased by 1...
 
 Conclusion1: dfinity does not have good or updated support for Rust code, so it cannot auto generate DID files, which are required to generate JavaScript interface files for NodeJs script. That is causing minting from NodeJs difficult.
@@ -23,7 +30,8 @@ Conclusion2: I could not use the seed phrases generated from dfx command tool to
 - Git
 - [DFX] version 0.12.1
 - [Rust] version 1.66.0 or later
-- [NodeJs] version 19.4.0
+- [NodeJs] version 19.4.0, which is is needed for --es-module-specifier-resolution in calling canister via NodeJs
+- [Linux] Ubuntu derivatives are required to run some bash commands
 
 ## Running Locally
 
@@ -77,7 +85,7 @@ npm install
 dfx start --background --clean
 ```
 
-## Generate canisters
+## Create canisters
 
 This is optional. `dfx deploy` will include this.
 To creates the .dfx/local directory and adds the canister_ids.json file to that directory:
@@ -108,8 +116,7 @@ Currently, dfx cannot automatically generate DID files for Rust canisters. So yo
 ### Deploy Hello_Frontend canister
 
 ```sh
-  dfx deploy hello_frontend --no-wallet
-  dfx generate hello_frontend
+  dfx deploy hello_frontend
 ```
 
 ### Deploy dip721_nft_container canister
@@ -152,6 +159,7 @@ dfx deploy --no-wallet --argument \
 ## Make declaration files
 
 if you change any canister function input and/or output, OR add/delete any canister function, OR add new canister, you must update the dip721-nft-container.did file and/or other canister did files manually.
+Currently, dfx generate supports four languages: Motoko, Candid, JavaScript, and TypeScript.
 
 To generate the declaration files.
 
@@ -179,6 +187,8 @@ dfx canister call dip721_nft_container logoDip721 '()'
 dfx canister call dip721_nft_container set_name '("Silver")'
 dfx canister call dip721_nft_container set_symbol '("SLV")'
 ```
+
+The old method arguments:
 
 ```rust
 enum MetadataPurpose {

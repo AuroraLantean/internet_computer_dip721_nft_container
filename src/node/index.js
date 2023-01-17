@@ -16,9 +16,7 @@ import {
   createActor,
 } from '../../src/declarations/dip721_nft_container/index.js';
 import { identity } from './identity.js';
-//import { dip721_nft_container } from '../declarations/dip721_nft_container';
 
-//import { dip721_nft_container } from '../declarations/dip721_nft_container';
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const log1 = console.log;
 log1('checkpoint 1');
@@ -182,7 +180,14 @@ nftConfig.reduce(async (prev, nft, idx) => {
   // let metaResult = await admin_actor.getMetadataDip721(0n);
   // log1('token 0n info: ', metaResult);
   // await delay(3000);
+  /* 
+    package.json: "type": "module",
 
+    dfx.json:
+      "declarations": {
+        "node_compatibility": true
+      }
+ */
   log1('nftConfig 15: to mint');
   const mintResult = await admin_actor.mintDip721forall(
     principal,

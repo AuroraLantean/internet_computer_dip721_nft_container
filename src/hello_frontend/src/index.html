@@ -14,9 +14,14 @@
       <br />
       <br />
       <form action="#">
-        <label for="name">Enter NFT_ID: &nbsp;</label>
-        <input id="nft_id" alt="nft_id" type="text" />
-        <button type="submit">Get NFT Metadata</button>
+        <label for="name-enter-nftid">Enter NFT_ID: &nbsp;</label>
+        <input id="nft_id" alt="nft_id" type="number" step="1" min=0 value="" />
+        <button id="get-metadata" type="submit">Get NFT Metadata</button>
+
+        <label for="name-mint-nft">Mint NFT: &nbsp;</label>
+        <input id="nft_to" alt="nft_to" type="text" value="hvnpv-7tz4x-urwpp-mtaw3-75xzo-v5mwr-b43ba-qgrtn-pc4kv-zy2dg-tqe"/>
+        <input id="nft_metadata" alt="nft_metadata" type="text" value="nft_name:Donkey" />
+        <button id="mint-nft" type="submit">Mint NFT</button>
       </form>
       <section id="metadata"></section>
     </main>
