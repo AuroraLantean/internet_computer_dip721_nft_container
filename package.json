@@ -40,7 +40,8 @@
     "d8": "./bashscript.sh 8",
     "d9": "./bashscript.sh 9",
     "d11": "node --es-module-specifier-resolution=node src/node/index.js",
-    "d12": "node --es-module-specifier-resolution=node src/node/index2.js"
+    "d12": "node --es-module-specifier-resolution=node src/node/index2.js",
+    "d13": "node --es-module-specifier-resolution=node src/node/index3.js"
   },
   "dependencies": {
     "@dfinity/identity-secp256k1": "^0.15.1",

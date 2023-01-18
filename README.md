@@ -3,6 +3,19 @@
 ## Summary
 
 - npm run once: run this once for setting up admin, john, alice, bob identities. john is acting as a hacker. alice and bob are acting as users.
+
+If you want to deploy the asset canister(frontend canister) to the IC, then remove the `node_compatibility` and `"type": "module",` described below. But if you want to use NodeJs to call your canister, then add these:
+Add `"type": "module",` into package.json
+Add the following into dfx.json under dip721_nft_container:
+
+```json
+      "declarations": {
+        "node_compatibility": true
+      }
+```
+
+[Note] adding above node_compatibility WILL disable the hello_frontend in the building process, So the hello_frontend will fail to work!
+
 - npm run d0: check Rust code, start dfx environment, use admin identity
 - npm run d1: deploy hello canister
 - npm run d2: deploy dip721_nft_container canister
@@ -18,7 +31,6 @@
 
 - npm run d12 : call a NodeJs script to invoke minting
 - npm run d11 : call a NodeJs script to invoke minting
-  ... add `"type": "module",` to package.json before calling
   ... although this will return error message, but when you call this again, it will show both NFT totalSupply and your NFT balance have increased by 1...
 
 Conclusion1: dfinity does not have good or updated support for Rust code, so it cannot auto generate DID files, which are required to generate JavaScript interface files for NodeJs script. That is causing minting from NodeJs difficult.
@@ -284,6 +296,22 @@ dfx identity get-principal
 
 Add `"type": "module",` in package.json
 Run in bash: `node --es-module-specifier-resolution=node src/node/index.js`
+
+### Public IC Deployment
+
+in the root directory for your project
+
+```
+dfx ping ic
+```
+
+you should see output similar to the following:
+
+```
+{
+"ic_api_version": "0.18.0" "impl_hash": "d639545e0f38e075ad240fd4ec45d4eeeb11e1f67a52cdd449cd664d825e7fec" "impl_version": "8dc1a28b4fb9605558c03121811c9af9701a6142" "replica_health_status": "healthy" "root_key": [48, 129, 130, 48, 29, 6, 13, 43, 6, 1, 4, 1, 130, 220, 124, 5, 3, 1, 2, 1, 6, 12, 43, 6, 1, 4, 1, 130, 220, 124, 5, 3, 2, 1, 3, 97, 0, 129, 76, 14, 110, 199, 31, 171, 88, 59, 8, 189, 129, 55, 60, 37, 92, 60, 55, 27, 46, 132, 134, 60, 152, 164, 241, 224, 139, 116, 35, 93, 20, 251, 93, 156, 12, 213, 70, 217, 104, 95, 145, 58, 12, 11, 44, 197, 52, 21, 131, 191, 75, 67, 146, 228, 103, 219, 150, 214, 91, 155, 180, 203, 113, 113, 18, 248, 71, 46, 13, 90, 77, 20, 80, 95, 253, 116, 132, 176, 18, 145, 9, 28, 95, 135, 185, 136, 131, 70, 63, 152, 9, 26, 11, 170, 174]
+}
+```
 
 ## Interface
 

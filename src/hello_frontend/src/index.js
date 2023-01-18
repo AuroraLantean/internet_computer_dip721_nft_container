@@ -14,11 +14,12 @@ document.querySelector('form').addEventListener('submit', async (e) => {
   log1('----------== submit button clicked');
   const buttonId = document.activeElement.id;
   log1('buttonId:', buttonId, typeof buttonId);
-  const button = e.target.querySelector('button');
   let outText = '';
 
   if (buttonId === 'get-metadata') {
     log1('--== get-metadata detected');
+    const button = e.target.querySelector('#get-metadata');
+
     const nft_id = document.getElementById('nft_id').value.toString();
     log1('nft_id:', nft_id);
     if (isEmpty(nft_id)) {
@@ -32,11 +33,12 @@ document.querySelector('form').addEventListener('submit', async (e) => {
       log1('input:', input, typeof input);
       const metadata = await dip721_nft_container.get_metadata_v2(input);
       outText = metadata.Ok;
-      log1('metadata:', outText);
+      log1('metadata:', metadata, ', outText:', outText);
       button.removeAttribute('disabled');
     }
   } else if (buttonId === 'mint-nft') {
     log1('--== mint-nft detected');
+    const button = e.target.querySelector('#mint-nft');
     const nft_metadata = document
       .getElementById('nft_metadata')
       .value.toString();
@@ -46,10 +48,12 @@ document.querySelector('form').addEventListener('submit', async (e) => {
     log1('nft_to:', nft_to);
     const nft_to_principal = Principal.fromText(nft_to);
     //const john = 'hvnpv-7tz4x-urwpp-mtaw3-75xzo-v5mwr-b43ba-qgrtn-pc4kv-zy2dg-tqe';
+    button.setAttribute('disabled', true);
     const out = await dip721_nft_container.mintDip721forall(
       nft_to_principal,
       nft_metadata
     );
+    button.removeAttribute('disabled');
     outText =
       'Minting Success! New NFT id:' +
       out.Ok.id +
