@@ -4,16 +4,6 @@
 
 - npm run once: run this once for setting up admin, john, alice, bob identities. john is acting as a hacker. alice and bob are acting as users.
 
-If you want to deploy the asset canister(frontend canister) to the IC, then remove the `node_compatibility` and `"type": "module",` described below. But if you want to use NodeJs to call your canister, then add these:
-Add `"type": "module",` into package.json
-Add the following into dfx.json under dip721_nft_container:
-
-```json
-      "declarations": {
-        "node_compatibility": true
-      }
-```
-
 [Note] adding above node_compatibility WILL disable the hello_frontend in the building process, So the hello_frontend will fail to work!
 
 - npm run d0: check Rust code, start dfx environment, use admin identity
@@ -30,8 +20,6 @@ Add the following into dfx.json under dip721_nft_container:
 - npm run d9: approveDip721, setApprovalForAllDip721
 
 - npm run d12 : call a NodeJs script to invoke minting
-- npm run d11 : call a NodeJs script to invoke minting
-  ... although this will return error message, but when you call this again, it will show both NFT totalSupply and your NFT balance have increased by 1...
 
 Conclusion1: dfinity does not have good or updated support for Rust code, so it cannot auto generate DID files, which are required to generate JavaScript interface files for NodeJs script. That is causing minting from NodeJs difficult.
 
@@ -42,7 +30,7 @@ Conclusion2: I could not use the seed phrases generated from dfx command tool to
 - Git
 - [DFX] version 0.12.1
 - [Rust] version 1.66.0 or later
-- [NodeJs] version 19.4.0, which is is needed for --es-module-specifier-resolution in calling canister via NodeJs
+- [NodeJs] version 18.13.0
 - [Linux] Ubuntu derivatives are required to run some bash commands
 
 ## Running Locally
@@ -70,14 +58,7 @@ members = [
 
 ## Update dfx.json
 
-Include all the canisters you want to deploy in the dfx.json file. Remember to add canister `rust` type if it is written in Rust, and add `node_compatibility` if you want to call it from NodeJs.
-
-```
-      "type": "rust",
-      "declarations": {
-        "node_compatibility": true
-      }
-```
+Include all the canisters you want to deploy in the dfx.json file. Remember to add canister `rust` type if it is written in Rust
 
 ## Check Rust canister code
 
@@ -323,16 +304,6 @@ Aside from the standard functions, it has five extra functions:
 The canister also supports a certified HTTP interface; going to `/<nft>/<id>` will return `nft`'s metadata file #`id`, with `/<nft>` returning the first non-preview file.
 
 Remember that query functions are uncertified; the result of functions like `ownerOfDip721` can be modified arbitrarily by a single malicious node. If queried information is depended on, for example if someone might send ICP to the owner of a particular NFT to buy it from them, those calls should be performed as update calls instead. You can force an update call by passing the `--update` flag to `dfx` or using the `Agent::update` function in `agent-rs`.
-
-## Minting
-
-Due to size limitations on the length of a terminal command, an image- or video-based NFT would be impossible to send via `dfx`. To that end, there is an experimental [minting tool][mint] you can use to mint a single-file NFT. As an example, to mint the default logo, you would run the following command:
-
-```sh
-minting-tool local "$(dfx canister id dip721_nft_container)" --owner "$(dfx identity get-principal)" --file ./logo.png --sha2-auto
-```
-
-Minting is restricted to anyone authorized with the `custodians` parameter or the `set_custodians` function. Since the contents of `--file` are stored on-chain, it's important to prevent arbitrary users from minting tokens, or they will be able to store arbitrarily-sized data in the contract and exhaust the canister's cycles. Be careful not to upload too much data to the canister yourself, or the contract will no longer be able to be upgraded afterwards.
 
 ## End
 

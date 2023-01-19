@@ -7,7 +7,7 @@ import { createRequire } from 'node:module';
 import {
   canisterId,
   createActor,
-} from '../../src/declarations/dip721_nft_container/index.js';
+} from '../declarations/dip721_nft_container/index.js';
 import { identity } from './identity.js';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
