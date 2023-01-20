@@ -1,11 +1,12 @@
 #!/bin/bash
 # ./bashscript.sh p1
+echo -e "Running bashscript.sh ..."
+echo -e "options: $1 $2";
 
-echo -e "Running run.sh ..."
-echo -e "option: $1 $2";
-
+cd /mnt/sda3/internet_computer/dip721-nft-container
+pwd
 if [[ $1 == "once" ]]; then
-  echo -e "option" $1
+  echo 'once'
   dfx identity new admin --force --disable-encryption || true
   dfx identity use admin
   dfx identity get-principal
@@ -20,9 +21,15 @@ if [[ $1 == "once" ]]; then
 
   npm install
 
-elif [[ $1 == "0" ]]; then
-  echo -e "option" $1
-  echo 'cargo check'
+elif [[ $1 == "test" ]]; then
+  echo 'test: bashscript test'
+
+elif [[ $1 == "dfxstop" ]]; then
+  echo 'dfxstop: dfx stop'
+  dfx stop
+
+elif [[ $1 == "startDfx" ]]; then
+  echo 'startDfx: cargo check then start dfx'
   cargo check
   # dfx ping local ||
   dfx start --background --clean
@@ -36,9 +43,8 @@ elif [[ $1 == "0" ]]; then
   echo 'admin principal'
   dfx identity get-principal
 
-elif [[ $1 == "1" ]]; then
-  echo -e "option" $1
-  echo 'to deploy hello'
+elif [[ $1 == "deployHello" ]]; then
+  echo '1: to deploy hello'
   dfx deploy hello --no-wallet --argument \
   "(record {
       name = \"Hello Canister Name\";
@@ -53,9 +59,8 @@ elif [[ $1 == "1" ]]; then
   echo 'generate hello declaration files'
   dfx generate hello
 
-elif [[ $1 == "2" ]]; then
-  echo -e "option" $1
-  echo 'to deploy dip721_nft_container'
+elif [[ $1 == "deployDip721" ]]; then
+  echo '2: to deploy dip721_nft_container'
   dfx deploy dip721_nft_container --no-wallet --argument \
   "(record {
       name = \"Gold\";
@@ -74,9 +79,8 @@ elif [[ $1 == "2" ]]; then
   echo 'generate dip721_nft_container declaration files'
   dfx generate dip721_nft_container
 
-elif [[ $1 == "2a" ]]; then
-  echo -e "option" $1
-  echo 'to re-deploy dip721_nft_container'
+elif [[ $1 == "deployDip721a" ]]; then
+  echo '2a to re-deploy dip721_nft_container'
   dfx canister install dip721_nft_container --mode reinstall --argument \
   "(record {
       name = \"Gold\";
@@ -96,8 +100,8 @@ elif [[ $1 == "2a" ]]; then
   dfx generate dip721_nft_container
 
 
-elif [[ $1 == "2no_logo" ]]; then
-  echo -e "option" $1
+elif [[ $1 == "deployDip721no_logo" ]]; then
+  echo '2no_logo'
   dfx deploy dip721_nft_container --no-wallet --argument \
   "(record {
       name = \"Gold\";
@@ -108,9 +112,8 @@ elif [[ $1 == "2no_logo" ]]; then
   echo 'generate dip721_nft_container declaration files'
   dfx generate dip721_nft_container
 
-elif [[ $1 == "3" ]]; then
-  echo -e "option" $1
-  echo 'to deploy hello_frontend'
+elif [[ $1 == "deployHelloFrontend" ]]; then
+  echo '3: to deploy hello_frontend'
   dfx deploy hello_frontend
   #--no-wallet
   echo 'hello_frontend has been deployed'
@@ -129,9 +132,8 @@ elif [[ $1 == "3" ]]; then
   xdg-open "http://127.0.0.1:4943/?canisterId=${hello_frontend_id}&id=${dip721_nft_container_id}"
   echo 'F12 or Ctrl + Shift + I to open the console'
 
-elif [[ $1 == "4" ]]; then
-  echo -e "option" $1
-  echo 'call some simple hello and dip721 canister functions'
+elif [[ $1 == "callSimpleFunctions" ]]; then
+  echo '4: call some simple hello and dip721 canister functions'
   dfx canister id dip721_nft_container
   dip721_id=$(dfx canister id dip721_nft_container)
   echo 'dip721_id:' $dip721_id
@@ -139,7 +141,10 @@ elif [[ $1 == "4" ]]; then
   dfx canister call dip721_nft_container symbolDip721 '()'
   echo 'totalSupply:'
   dfx canister call dip721_nft_container totalSupplyDip721 '()'
+  echo 'last nft metadata:'
+  dfx canister call dip721_nft_container get_metadata_last "()"
   #dfx canister call dip721_nft_container logoDip721 '()'
+
   dfx canister id hello
   hello_id=$(dfx canister id hello)
   echo 'hello_id:' $hello_id
@@ -159,61 +164,94 @@ elif [[ $1 == "4" ]]; then
   echo 'call hello get_price()'
   dfx canister call hello get_price '()'
 
-elif [[ $1 == "5" ]]; then
-  echo -e "option" $1
-  echo 'get_price from dip721 to hello'
+elif [[ $1 == "callInterCanister" ]]; then
+  echo '5: get_price from dip721 to hello'
   hello_id=$(dfx canister id hello)
   dfx canister call dip721_nft_container get_price "(principal\"$hello_id\")"
 
-elif [[ $1 == "6" ]]; then
-  echo -e "option" $1
-  echo 'admin calls mintDip721'
+elif [[ $1 == "mintNFT" ]]; then
+  echo -e "option" $1 'metadata:'$2 'nft_to:' $3
+  echo '6: admin calls mintDip721'
+  if [ -z "$2" ]
+  then
+    echo "metadata is empty"
+    exit 0
+  else
+    echo "metadata is valid"
+  fi
+
+  echo 'use admin'
   dfx identity use admin
   admin=$(dfx identity get-principal)
   echo 'admin:' $admin
-  echo '(*) Creating NFT with metadata "nft_name:King-Kong":'
+  echo "(*) Creating NFT with metadata $2:"
   dfx canister call dip721_nft_container mintDip721 \
-      "(principal\"$admin\",\"nft_name:King-Kong\")"
+      "(principal\"$admin\",\"$2\")"
   echo '(*) Number of NFTs admin owns:'
   dfx canister call dip721_nft_container balanceOfDip721 "(principal\"$admin\")"
-  echo '(*) Metadata of the newly created NFT:'
-  dfx canister call dip721_nft_container get_metadata_v2 '(0:nat64)'
+  echo "(*) totalSupply:"
+  dfx canister call dip721_nft_container totalSupplyDip721 '()'
+  echo '(*) last Metadata:'
+  dfx canister call dip721_nft_container get_metadata_last "()"
 
-elif [[ $1 == "6b" ]]; then
-  echo -e "option" $1
-  echo 'set_metadata'
+elif [[ $1 == "getMetadata" ]]; then
+  echo -e "option" $1 'nft_id:'$2
+  echo 'get_metadata'
+  if [ -z "$2" ]
+  then
+    echo "nft_id is empty"
+    exit 0
+  else
+    echo "nft_id is valid"
+  fi
+  dfx canister call dip721_nft_container get_metadata_v2 "($2:nat64)"
+
+elif [[ $1 == "setMetadata" ]]; then
+  echo '6b: set_metadata' $1 'nft_id:'$2
+  if [ -z "$2" ]
+  then
+    echo "nft_id is empty"
+    exit 0
+  else
+    echo "nft_id is valid"
+  fi
   dfx identity use admin
   admin=$(dfx identity get-principal)
   echo 'admin:' $admin
   echo '(*) Number of NFTs admin owns:'
   dfx canister call dip721_nft_container balanceOfDip721 "(principal\"$admin\")"
   echo 'Set Metadata of NFT id: 0'
-  dfx canister call dip721_nft_container set_metadata "(0:nat64,\"nft_name:Godzilla\")"
+  dfx canister call dip721_nft_container set_metadata "($2:nat64,\"nft_name:Godzilla\")"
   echo 'Metadata of the NFT id: 0'
-  dfx canister call dip721_nft_container get_metadata_v2 '(0:nat64)'
+  dfx canister call dip721_nft_container get_metadata_v2 "($2:nat64)"
 
-elif [[ $1 == "6a" ]]; then
-  echo -e "option" $1
-  echo 'john calls mintDip721forall'
-  dfx identity use admin
-  admin=$(dfx identity get-principal)
-  echo 'admin identity:' $admin
+elif [[ $1 == "mintDip721forall" ]]; then
+  echo -e "option" $1 'nft_id:'$2
+  echo '6a: john calls mintDip721forall'
+  if [ -z "$2" ]
+  then
+    echo "metadata is empty"
+    exit 0
+  else
+    echo "metadata is valid"
+  fi
   dfx identity use john
   echo 'john identity:'
   dfx identity get-principal
   john=$(dfx identity get-principal)
 
-  echo '(*) Creating NFT with metadata "nft_name:Kiwi":'
+  echo '(*) Creating NFT with metadata "$2":'
   dfx canister call dip721_nft_container mintDip721forall \
-      "(principal\"$john\",\"nft_name:Kiwi\")"
+      "(principal\"$john\",\"$2\")"
   echo '(*) Number of NFTs john owns:'
   dfx canister call dip721_nft_container balanceOfDip721 "(principal\"$john\")"
-  echo '(*) Metadata of the newly created NFT:'
-  dfx canister call dip721_nft_container get_metadata_v2 '(1:nat64)'
+  echo "(*) totalSupply:"
+  dfx canister call dip721_nft_container totalSupplyDip721 '()'
+  echo '(*) last Metadata:'
+  dfx canister call dip721_nft_container get_metadata_last "()"
 
 elif [[ $1 == "6zz" ]]; then
-  echo -e "option" $1
-  echo 'mint NFT with old method'
+  echo '6zz: mint NFT with old method'
   dfx identity use admin
   admin=$(dfx identity get-principal)
   ALICE=$(dfx --identity alice identity get-principal)
@@ -238,11 +276,10 @@ elif [[ $1 == "6zz" ]]; then
           }
       }},blob\"hello\")"
   echo '(*) Metadata of the newly created NFT:'
-  dfx canister call dip721_nft_container getMetadataDip721 '(0:nat64)'
+  dfx canister call dip721_nft_container get_metadata_last "()"
 
 elif [[ $1 == "7" ]]; then
-  echo -e "option" $1
-  echo 'get balances of admin, alice, bob'
+  echo '7: get balances of admin, alice, bob'
   dfx identity use admin
   admin=$(dfx identity get-principal)
   ALICE=$(dfx --identity alice identity get-principal)
@@ -263,7 +300,7 @@ elif [[ $1 == "7" ]]; then
   dfx canister call dip721_nft_container totalSupplyDip721
 
 elif [[ $1 == "8" ]]; then
-  echo -e "option" $1
+
   echo 'Transfer one NFT from admin to Alice'
   dfx identity use admin
   admin=$(dfx identity get-principal)
@@ -280,7 +317,6 @@ elif [[ $1 == "8" ]]; then
   dfx canister call dip721_nft_container balanceOfDip721 "(principal\"$ALICE\")"
 
 elif [[ $1 == "9" ]]; then
-  echo -e "option" $1
   echo 'approveDip721, setApprovalForAllDip721'
   dfx identity use admin
   admin=$(dfx identity get-principal)

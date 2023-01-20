@@ -218,6 +218,23 @@ fn get_metadata_v2(token_id: u64) -> Result<String, Error> {
     });
     res
 }
+#[query(name = "get_metadata_last")]
+fn get_metadata_last() -> Result<String, Error> {
+    let total_supply = STATE.with(|state| state.borrow().nfts.len() as u64);
+    if total_supply <= 0 {
+        return Ok("there is no NFT".to_owned());
+    }
+    let res: Result<String, Error> = STATE.with(|state| {
+        let state = state.borrow();
+        let metadata = &state
+            .nfts
+            .get(usize::try_from(total_supply - 1)?)
+            .ok_or(Error::InvalidTokenId)?
+            .metadata;
+        Ok((*metadata).clone())
+    });
+    res
+}
 
 #[export_name = "canister_query getMetadataDip721"]
 fn get_metadata(/* token_id: u64 */) /* -> Result<&'static MetadataDesc> */

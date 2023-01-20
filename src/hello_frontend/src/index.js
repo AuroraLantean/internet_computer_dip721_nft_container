@@ -31,9 +31,9 @@ document.querySelector('form').addEventListener('submit', async (e) => {
       button.setAttribute('disabled', true);
       const input = Number(nft_id);
       log1('input:', input, typeof input);
-      const metadata = await dip721_nft_container.get_metadata_v2(input);
-      outText = metadata.Ok;
-      log1('metadata:', metadata, ', outText:', outText);
+      const metadata_out = await dip721_nft_container.get_metadata_v2(input);
+      outText = metadata_out.Ok;
+      log1('metadata_out:', metadata_out, ', outText:', outText);
       button.removeAttribute('disabled');
     }
   } else if (buttonId === 'mint-nft') {
