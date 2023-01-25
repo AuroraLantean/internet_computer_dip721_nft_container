@@ -3,10 +3,11 @@
 echo -e "Running bashscript.sh ..."
 echo -e "options: $1 $2";
 
-cd /mnt/sda3/internet_computer/dip721-nft-container
+#cd /mnt/sda3/internet_computer/dip721-nft-container
 pwd
 if [[ $1 == "once" ]]; then
   echo 'once'
+  rustup target add wasm32-unknown-unknown
   dfx identity new admin --force --disable-encryption || true
   dfx identity use admin
   dfx identity get-principal
@@ -17,6 +18,10 @@ if [[ $1 == "once" ]]; then
 
   dfx identity new bob --disable-encryption || true
   dfx identity use bob
+  dfx identity get-principal
+
+  dfx identity new john --disable-encryption || true
+  dfx identity use john
   dfx identity get-principal
 
   npm install

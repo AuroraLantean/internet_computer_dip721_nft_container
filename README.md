@@ -29,7 +29,8 @@ Conclusion2: I could not use the seed phrases generated from dfx command tool to
 
 - Git
 - [DFX] version 0.12.1
-- [Rust] version 1.66.0 or later
+- [Rust] version 1.66.1 or later
+- [Install Rust WASM module]: rustup target add wasm32-unknown-unknown
 - [NodeJs] version 18.13.0
 - [Linux] Ubuntu derivatives are required to run some bash commands
 
