@@ -24,6 +24,8 @@
     "d0c": "dfx start --background --clean",
     "d0d": "dfx start --background",
     "once": "./bashscript.sh once",
+    "cargocheck": "./bashscript.sh cargocheck",
+    "usedfxadmin": "./bashscript.sh useDfxAdmin",
     "d0": "./bashscript.sh startDfx",
     "d1": "./bashscript.sh deployHello",
     "d2": "./bashscript.sh deployDip721",

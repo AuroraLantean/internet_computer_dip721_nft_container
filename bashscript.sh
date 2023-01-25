@@ -3,7 +3,7 @@
 echo -e "Running bashscript.sh ..."
 echo -e "options: $1 $2";
 
-#cd /mnt/sda3/internet_computer/dip721-nft-container
+cd ../dip721-nft-container
 pwd
 if [[ $1 == "once" ]]; then
   echo 'once'
@@ -33,9 +33,18 @@ elif [[ $1 == "dfxstop" ]]; then
   echo 'dfxstop: dfx stop'
   dfx stop
 
+elif [[ $1 == "cargocheck" ]]; then
+  echo 'cargocheck: cargo check'
+  cargo check
+
+elif [[ $1 == "useDfxAdmin" ]]; then
+  echo 'useDfxAdmin...'
+  dfx identity use admin
+  echo 'admin principal'
+  dfx identity get-principal
+
 elif [[ $1 == "startDfx" ]]; then
   echo 'startDfx: cargo check then start dfx'
-  cargo check
   # dfx ping local ||
   dfx start --background --clean
   #sleep 2s
@@ -44,9 +53,6 @@ elif [[ $1 == "startDfx" ]]; then
   #dfx canister create dip721_nft_container
   #dfx canister create hello
   #dfx canister create hello_frontend
-  dfx identity use admin
-  echo 'admin principal'
-  dfx identity get-principal
 
 elif [[ $1 == "deployHello" ]]; then
   echo '1: to deploy hello'
