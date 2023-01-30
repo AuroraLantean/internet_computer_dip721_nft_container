@@ -2,19 +2,24 @@
 
 ## Summary
 
-- npm run once: run this once for setting up admin, john, alice, bob identities. john is acting as a hacker. alice and bob are acting as users.
+- npm run once: run this once for setting up admin, john, alice, bob identities. admin acts as the admin. john actis as a hacker. alice and bob acti as normal users.
 
-[Note] adding above node_compatibility WILL disable the hello_frontend in the building process, So the hello_frontend will fail to work!
+[Note] adding node_compatibility in dfx.json WILL disable the hello_frontend in the building process!
 
-- npm run d0: check Rust code, start dfx environment, use admin identity
+- npm run d01: check Rust code
+- npm run d02: use admin identity
+- npm run d0: start dfx environment
 - npm run d1: deploy hello canister
 - npm run d2: deploy dip721_nft_container canister
 - npm run d3: deploy hello_frontend canister
+  ... in the browser, press F12 to open the console
 - npm run d4: call some simple hello and dip721 canister functions
 - npm run d5: call dip721 canister function, which will call hello get_price function for inter-canister calls
 - npm run d6: use admin identity to mint one NFT
-- npm run d6b: use admin identity to set minted NFT metadata
+- npm run d6g: get metadata of NFT id = 0
+- npm run d6s: use admin identity to set NFT id = 0 metadata
 - npm run d6a: use john identity to mint one NFT
+- npm run d6ag: get metadata of NFT id = 1
 - npm run d7: get balances of admin, alice, bob
 - npm run d8: transfer one NFT from admin to Alice
 - npm run d9: approveDip721, setApprovalForAllDip721
@@ -29,8 +34,11 @@ Conclusion2: I could not use the seed phrases generated from dfx command tool to
 
 - Git
 - [DFX] version 0.12.1
-- [Rust] version 1.66.1 or later
-- [Install Rust WASM module]: rustup target add wasm32-unknown-unknown
+- [Rust] version 1.67.0
+- [Rust WASM module]:
+  `rustup target add wasm32-unknown-unknown`
+- [cargo audit]
+  `cargo install cargo-audit`
 - [NodeJs] version 18.13.0
 - [Linux] Ubuntu derivatives are required to run some bash commands
 
